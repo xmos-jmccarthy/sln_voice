@@ -34,6 +34,10 @@
 #define appconfINFERENCE_ENABLED   1
 #endif
 
+#ifndef appconfUSB_VIDEO_DISPLAY_ENABLED
+#define appconfUSB_VIDEO_DISPLAY_ENABLED 1
+#endif
+
 #ifndef appconfI2S_ENABLED
 #define appconfI2S_ENABLED   0
 #endif

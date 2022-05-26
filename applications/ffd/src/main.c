@@ -23,6 +23,7 @@
 #include "platform/driver_instances.h"
 #include "usb_support.h"
 #include "usb_audio.h"
+#include "usb_video.h"
 #include "audio_pipeline/audio_pipeline.h"
 #include "inference_engine.h"
 #include "fs_support.h"
@@ -153,6 +154,9 @@ void startup_task(void *arg)
 #if appconfINFERENCE_ENABLED && ON_TILE(INFERENCE_TILE_NO)
     ssd1306_display_create(appconfSSD1306_TASK_PRIORITY);
     inference_engine_create(appconfINFERENCE_MODEL_RUNNER_TASK_PRIORITY, NULL);
+#if appconfUSB_VIDEO_DISPLAY_ENABLED
+    usb_video_init(appconfSSD1306_TASK_PRIORITY);
+#endif
 #endif
 
 #if ON_TILE(AUDIO_PIPELINE_TILE_NO)

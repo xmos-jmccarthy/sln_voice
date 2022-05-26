@@ -115,11 +115,19 @@ const uint16_t tud_audio_desc_lengths[CFG_TUD_AUDIO] = {
         uac2_total_descriptors_length
 };
 
+#if appconfUSB_VIDEO_DISPLAY_ENABLED
+#define CONFIG_TOTAL_LEN        (TUD_CONFIG_DESC_LEN + CFG_TUD_AUDIO * uac2_total_descriptors_length + TUD_VIDEO_CAPTURE_DESC_LEN)
+#define EPNUM_AUDIO     0x02
+#define EPNUM_VIDEO_IN  0x81
+#define AUDIO_INTERFACE_STRING_INDEX 4
+#define VIDEO_INTERFACE_STRING_INDEX 5
+
+#else /* appconfUSB_VIDEO_DISPLAY_ENABLED */
 #define CONFIG_TOTAL_LEN        (TUD_CONFIG_DESC_LEN + CFG_TUD_AUDIO * uac2_total_descriptors_length)
 #define EPNUM_AUDIO   0x01
-
-
 #define AUDIO_INTERFACE_STRING_INDEX 4
+
+#endif /* appconfUSB_VIDEO_DISPLAY_ENABLED */
 
 uint8_t const desc_configuration[] = {
     // Interface count, string index, total length, attribute, power in mA
@@ -194,6 +202,37 @@ uint8_t const desc_configuration[] = {
     TUD_AUDIO_DESC_STD_AS_ISO_EP(/*_ep*/ 0x80 | EPNUM_AUDIO, /*_attr*/ (TUSB_XFER_ISOCHRONOUS | TUSB_ISO_EP_ATT_SYNCHRONOUS | /*TUSB_ISO_EP_ATT_IMPLICIT_FB |*/ TUSB_ISO_EP_ATT_DATA), /*_maxEPsize*/ CFG_TUD_AUDIO_FUNC_1_EP_IN_SZ, /*_interval*/ (CFG_TUSB_RHPORT0_MODE & OPT_MODE_HIGH_SPEED) ? 0x04 : 0x01),
     /* Class-Specific AS Isochronous Audio Data Endpoint Descriptor(4.10.1.2) */
     TUD_AUDIO_DESC_CS_AS_ISO_EP(/*_attr*/ AUDIO_CS_AS_ISO_DATA_EP_ATT_NON_MAX_PACKETS_OK, /*_ctrl*/ AUDIO_CTRL_NONE, /*_lockdelayunit*/ AUDIO_CS_AS_ISO_DATA_EP_LOCK_DELAY_UNIT_MILLISEC, /*_lockdelay*/ 0x0003),
+#endif
+
+
+#if appconfUSB_VIDEO_DISPLAY_ENABLED
+    // IAD for Video Control
+    TUD_VIDEO_DESC_IAD(/*_firstitfs*/ ITF_NUM_VIDEO_CONTROL, /*_nitfs*/ 2, /*_stridx*/ VIDEO_INTERFACE_STRING_INDEX),
+
+    /* Video control 0 */
+    TUD_VIDEO_DESC_STD_VC(ITF_NUM_VIDEO_CONTROL, 0, VIDEO_INTERFACE_STRING_INDEX),
+    TUD_VIDEO_DESC_CS_VC( /* UVC 1.5*/ 0x0150, /* wTotalLength - bLength */ TUD_VIDEO_DESC_CAMERA_TERM_LEN + TUD_VIDEO_DESC_OUTPUT_TERM_LEN, UVC_CLOCK_FREQUENCY, ITF_NUM_VIDEO_STREAMING),
+    TUD_VIDEO_DESC_CAMERA_TERM(UVC_ENTITY_CAP_INPUT_TERMINAL, 0, 0,
+                             /*wObjectiveFocalLengthMin*/0, /*wObjectiveFocalLengthMax*/0,
+                             /*wObjectiveFocalLength*/0, /*bmControls*/0),
+    TUD_VIDEO_DESC_OUTPUT_TERM(UVC_ENTITY_CAP_OUTPUT_TERMINAL, VIDEO_TT_STREAMING, 0, 1, 0),
+    /* Video stream alt. 0 */
+    TUD_VIDEO_DESC_STD_VS(ITF_NUM_VIDEO_STREAMING, 0, 0, 0),
+    /* Video stream header for without still image capture */
+    TUD_VIDEO_DESC_CS_VS_INPUT( /*bNumFormats*/1, /*wTotalLength - bLength */ TUD_VIDEO_DESC_CS_VS_FMT_UNCOMPR_LEN + TUD_VIDEO_DESC_CS_VS_FRM_UNCOMPR_CONT_LEN + TUD_VIDEO_DESC_CS_VS_COLOR_MATCHING_LEN,
+        EPNUM_VIDEO_IN, /*bmInfo*/0, /*bTerminalLink*/UVC_ENTITY_CAP_OUTPUT_TERMINAL, /*bStillCaptureMethod*/0, /*bTriggerSupport*/0, /*bTriggerUsage*/0, /*bmaControls(1)*/0),
+    /* Video stream format */
+    TUD_VIDEO_DESC_CS_VS_FMT_YUY2(/*bFormatIndex*/1, /*bNumFrameDescriptors*/1, /*bDefaultFrameIndex*/1, 0, 0, 0, /*bCopyProtect*/0),
+    /* Video stream frame format */
+    TUD_VIDEO_DESC_CS_VS_FRM_UNCOMPR_CONT(/*bFrameIndex */1, 0, FRAME_WIDTH, FRAME_HEIGHT,
+        FRAME_WIDTH * FRAME_HEIGHT * 16, FRAME_WIDTH * FRAME_HEIGHT * 16 * FRAME_RATE,
+        FRAME_WIDTH * FRAME_HEIGHT * 16,
+        (10000000/FRAME_RATE), (10000000/FRAME_RATE), (10000000/FRAME_RATE)*FRAME_RATE, (10000000/FRAME_RATE)),
+    TUD_VIDEO_DESC_CS_VS_COLOR_MATCHING(VIDEO_COLOR_PRIMARIES_BT709, VIDEO_COLOR_XFER_CH_BT709, VIDEO_COLOR_COEF_SMPTE170M),
+    /* VS alt 1 */
+    TUD_VIDEO_DESC_STD_VS(ITF_NUM_VIDEO_STREAMING, 1, 1, 0),
+    /* EP */
+    TUD_VIDEO_DESC_EP_ISO(EPNUM_VIDEO_IN, CFG_TUD_VIDEO_STREAMING_EP_BUFSIZE, 1)
 #endif
 };
 

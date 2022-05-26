@@ -84,6 +84,7 @@ static void ssd1306_128x32_ascii_to_bitmap(char* str_buf, char* bitmap) {
     }
 }
 
+extern void video_class_write(uint8_t *bitmap);
 void display_task(void *args)
 {
     ssd1306_transport ssd1306_transport = {i2c_master_ctx, 0x3C, &ssd1306_I2C_write};
@@ -98,6 +99,9 @@ void display_task(void *args)
     ssd1306_128x32_clear_bitmap((char*)display_buf);
 
     while(1) {
+#if appconfUSB_VIDEO_DISPLAY_ENABLED
+        video_class_write(( uint8_t *)display_buf);
+#endif
         ssd1306_write(NULL, ssd1306_ctx, (const uint8_t *)display_buf);
         /* Wait forever until someone tells us we need to update */
         (void) ulTaskNotifyTake(pdFALSE, portMAX_DELAY);

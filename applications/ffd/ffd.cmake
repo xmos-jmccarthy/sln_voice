@@ -35,6 +35,9 @@ set(APP_COMPILE_DEFINITIONS
     CFG_TUSB_DEBUG=0
 
     USE_SWMEM=1
+
+    ## For Debug
+    appconfUSB_ENABLED=1
 )
 
 set(APP_LINK_OPTIONS
