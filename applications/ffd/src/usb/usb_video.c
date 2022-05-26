@@ -54,7 +54,6 @@ void video_class_write(uint8_t *bitmap)
                         break;
                     case 0x01:
                         memcpy(LOCATION_BASE, yuy2_wht_blk, 4);
-                        // memcpy(LOCATION_BASE, yuy2_blk_wht, 4);
                         break;
                     case 0x00:
                         memcpy(LOCATION_BASE, yuy2_wht_wht, 4);

@@ -155,7 +155,7 @@ void startup_task(void *arg)
     ssd1306_display_create(appconfSSD1306_TASK_PRIORITY);
     inference_engine_create(appconfINFERENCE_MODEL_RUNNER_TASK_PRIORITY, NULL);
 #if appconfUSB_VIDEO_DISPLAY_ENABLED
-    usb_video_init(appconfSSD1306_TASK_PRIORITY);
+    usb_video_init(appconfUSB_VIDEO_TASK_PRIORITY);
 #endif
 #endif
 

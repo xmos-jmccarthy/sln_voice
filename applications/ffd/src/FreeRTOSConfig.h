@@ -11,7 +11,7 @@ your application. */
 #define configCPU_CLOCK_HZ                      100000000
 
 #if ON_TILE(0)
-#define configNUM_CORES                         7
+#define configNUM_CORES                         5
 #endif
 #if ON_TILE(1)
 #define configNUM_CORES                         6

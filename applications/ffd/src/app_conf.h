@@ -95,6 +95,7 @@
 #define appconfSPI_TASK_PRIORITY                    (configMAX_PRIORITIES / 2 + 1)
 #define appconfQSPI_FLASH_TASK_PRIORITY             (configMAX_PRIORITIES - 1)
 #define appconfSSD1306_TASK_PRIORITY                (configMAX_PRIORITIES / 2 - 1)
+#define appconfUSB_VIDEO_TASK_PRIORITY              (configMAX_PRIORITIES /2 + 2)
 
 #include "app_conf_check.h"
 
