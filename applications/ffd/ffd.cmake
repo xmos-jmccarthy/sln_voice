@@ -37,7 +37,8 @@ set(APP_COMPILE_DEFINITIONS
     USE_SWMEM=1
 
     ## For Debug
-    appconfUSB_ENABLED=1
+    # appconfUSB_ENABLED=1
+    # appconfUSB_VIDEO_DISPLAY_ENABLED=1
 )
 
 set(APP_LINK_OPTIONS

@@ -35,7 +35,7 @@
 #endif
 
 #ifndef appconfUSB_VIDEO_DISPLAY_ENABLED
-#define appconfUSB_VIDEO_DISPLAY_ENABLED 1
+#define appconfUSB_VIDEO_DISPLAY_ENABLED 0
 #endif
 
 #ifndef appconfI2S_ENABLED
