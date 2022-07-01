@@ -111,4 +111,13 @@ void platform_start(void)
     mics_start();
     i2s_start();
     usb_start();
+
+
+#if ON_TILE(SPDIF_TILE_NO)
+    rtos_spdif_start(
+            spdif_ctx,
+            2.2 * MIC_ARRAY_CONFIG_SAMPLES_PER_FRAME,
+            3
+        );
+#endif
 }

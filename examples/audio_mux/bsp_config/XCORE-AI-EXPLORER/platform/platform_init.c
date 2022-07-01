@@ -210,4 +210,14 @@ void platform_init(chanend_t other_tile_c)
     mics_init();
     i2s_init();
     usb_init();
+
+#if ON_TILE(SPDIF_TILE_NO)
+    rtos_spdif_init(
+            spdif_ctx,
+            1,
+            XS1_PORT_1M,
+            SPDIF_CLKBLK,
+            48000
+        );
+#endif
 }

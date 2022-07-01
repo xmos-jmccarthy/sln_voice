@@ -13,6 +13,7 @@ extern "C" {
 #include "rtos_gpio.h"
 #include "rtos_i2c_master.h"
 #include "rtos_i2s.h"
+#include "rtos_spdif.h"
 
 #ifdef __cplusplus
 };
@@ -25,6 +26,7 @@ extern "C" {
 #define I2C_TILE_NO        0
 #define MICARRAY_TILE_NO   1
 #define I2S_TILE_NO        1
+#define SPDIF_TILE_NO        1
 
 /** TILE 0 Clock Blocks */
 #define FLASH_CLKBLK  XS1_CLKBLK_1
@@ -36,6 +38,7 @@ extern "C" {
 #define PDM_CLKBLK_1  XS1_CLKBLK_1
 #define PDM_CLKBLK_2  XS1_CLKBLK_2
 #define I2S_CLKBLK    XS1_CLKBLK_3
+#define SPDIF_CLKBLK    XS1_CLKBLK_4
 
 /* Port definitions */
 #define PORT_MCLK     PORT_MCLK_IN
@@ -47,5 +50,6 @@ extern rtos_gpio_t *gpio_ctx_t1;
 extern rtos_mic_array_t *mic_array_ctx;
 extern rtos_i2c_master_t *i2c_master_ctx;
 extern rtos_i2s_t *i2s_ctx;
+extern rtos_spdif_t *spdif_ctx;
 
 #endif /* DRIVER_INSTANCES_H_ */

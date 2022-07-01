@@ -23,3 +23,6 @@ rtos_i2c_master_t *i2c_master_ctx = &i2c_master_ctx_s;
 
 static rtos_i2s_t i2s_ctx_s;
 rtos_i2s_t *i2s_ctx = &i2s_ctx_s;
+
+static rtos_spdif_t spdif_ctx_s;
+rtos_spdif_t *spdif_ctx = &spdif_ctx_s;

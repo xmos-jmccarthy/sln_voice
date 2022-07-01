@@ -8,6 +8,10 @@ set(APP_INCLUDES
     ${CMAKE_CURRENT_LIST_DIR}/src/usb
 )
 
+## Add some experimental modules and drivers
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/modules/io/modules)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/modules/rtos/modules)
+
 include(${CMAKE_CURRENT_LIST_DIR}/bsp_config/bsp_config.cmake)
 
 #**********************
@@ -40,6 +44,8 @@ set(APP_COMMON_LINK_LIBRARIES
     rtos::freertos_usb
     sdk::lib_src
     sln_voice::example::audio_mux::xcore_ai_explorer
+
+    rtos::drivers::spdif
 )
 
 #**********************
