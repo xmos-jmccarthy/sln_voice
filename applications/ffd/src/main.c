@@ -30,6 +30,8 @@
 #include "ssd1306_rtos_support.h"
 #include "intent_handler/intent_handler.h"
 
+#include "xcore_clock_control.h"
+
 extern void startup_task(void *arg);
 extern void tile_common_init(chanend_t c);
 
@@ -124,6 +126,25 @@ void startup_task(void *arg)
     led_heartbeat_create(appconfLED_HEARTBEAT_TASK_PRIORITY, NULL);
 #endif
 
+
+#if ON_TILE(0)
+// vTaskDelay(pdMS_TO_TICKS(2000));    /* some time before we kill this tile for other things to get set up */
+    // set_tile_processor_clk_div(get_local_tile_id(), 600);
+    rtos_printf("tile[%d] clock rate %d\n", THIS_XCORE_TILE, get_local_tile_processor_clock());
+    // rtos_printf("ref is %d\n", get_local_ref_clock());
+#endif
+
+#if ON_TILE(1)
+    // set_tile_processor_clk_div(get_local_tile_id(), 2); // 600/2 = 300
+    // set_tile_processor_clk_div(get_local_tile_id(), 3); // 600/3 = 200 // lowest i2s functions
+    // set_tile_processor_clk_div(get_local_tile_id(), 5); // 600/5 = 120
+    // set_tile_processor_clk_div(get_local_tile_id(), 6); // 600/6 = 100
+    // set_tile_processor_clk_div(get_local_tile_id(), 12); // 600/12 = 50
+    // set_tile_processor_clk_div(get_local_tile_id(), 24); // 600/24 = 25
+    // set_tile_processor_clk_div(get_local_tile_id(), 600); // 600/600 = 1
+    rtos_printf("tile[%d] clock rate %d\n", THIS_XCORE_TILE, get_local_tile_processor_clock());
+#endif
+
 	for (;;) {
 		// rtos_printf("Tile[%d]:\n\tMinimum heap free: %d\n\tCurrent heap free: %d\n", THIS_XCORE_TILE, xPortGetMinimumEverFreeHeapSize(), xPortGetFreeHeapSize());
 		vTaskDelay(pdMS_TO_TICKS(5000));
@@ -142,6 +163,8 @@ void tile_common_init(chanend_t c)
     platform_init(c);
     chanend_free(c);
 
+    enable_local_tile_processor_clock_divider();
+    set_tile_processor_clk_div(get_local_tile_id(), 1);
     xTaskCreate((TaskFunction_t) startup_task,
                 "startup_task",
                 RTOS_THREAD_STACK_SIZE(startup_task),

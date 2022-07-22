@@ -19,6 +19,7 @@
 #include "ff.h"
 #include "audio_response.h"
 
+#include "xcore_clock_control.h"
 #define WAKEUP_LOW  (appconfINTENT_WAKEUP_EDGE_TYPE)
 #define WAKEUP_HIGH (appconfINTENT_WAKEUP_EDGE_TYPE == 0)
 
