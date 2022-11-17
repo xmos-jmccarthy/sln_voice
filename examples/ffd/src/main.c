@@ -29,12 +29,14 @@
 #include "xcore_device_memory.h"
 #include "ssd1306_rtos_support.h"
 #include "intent_handler/intent_handler.h"
-
+#include "xcore_clock_control.h"
 extern void startup_task(void *arg);
 extern void tile_common_init(chanend_t c);
 
 //void uart_write(char data) {} //API for Wanson's Debug
 
+static uint32_t in_last = 0;
+static uint32_t out_last = 0;
 __attribute__((weak))
 void audio_pipeline_input(void *input_app_data,
                           int32_t **input_audio_frames,
@@ -59,10 +61,17 @@ void audio_pipeline_input(void *input_app_data,
         }
     }
 
+
     rtos_mic_array_rx(mic_array_ctx,
                       input_audio_frames,
                       frame_count,
                       portMAX_DELAY);
+
+
+
+    // rtos_printf("in times diff:%d\n", get_reference_time() - in_last);
+    // in_last = get_reference_time();
+
 }
 
 __attribute__((weak))
@@ -76,6 +85,9 @@ int audio_pipeline_output(void *output_app_data,
 #if appconfINFERENCE_ENABLED
     inference_engine_sample_push((int32_t *)output_audio_frames, frame_count);
 #endif
+
+    // rtos_printf("out times diff:%d\n", get_reference_time() - out_last);
+    // out_last = get_reference_time();
 
     return AUDIO_PIPELINE_FREE_FRAME;
 }
@@ -124,8 +136,26 @@ void startup_task(void *arg)
     audio_pipeline_init(NULL, NULL);
 #endif
 
-#if ON_TILE(0)
+#if ON_TILE(1)
     led_heartbeat_create(appconfLED_HEARTBEAT_TASK_PRIORITY, NULL);
+#endif
+#if ON_TILE(0)
+// vTaskDelay(pdMS_TO_TICKS(2000));    /* some time before we kill this tile for other things to get set up */
+    // set_tile_processor_clk_div(get_local_tile_id(), 600);
+    rtos_printf("tile[%d] clock rate %d\n", THIS_XCORE_TILE, get_local_tile_processor_clock());
+    // rtos_printf("ref is %d\n", get_local_ref_clock());
+#endif
+
+#if ON_TILE(1)
+    // set_tile_processor_clk_div(get_local_tile_id(), 2); // 600/2 = 300
+    // set_tile_processor_clk_div(get_local_tile_id(), 3); // 600/3 = 200 // lowest i2s functions
+    // set_tile_processor_clk_div(get_local_tile_id(), 4); // 600/4 = 150
+    set_tile_processor_clk_div(get_local_tile_id(), 5); // 600/5 = 120
+    // set_tile_processor_clk_div(get_local_tile_id(), 6); // 600/6 = 100
+    // set_tile_processor_clk_div(get_local_tile_id(), 12); // 600/12 = 50
+    // set_tile_processor_clk_div(get_local_tile_id(), 24); // 600/24 = 25
+    // set_tile_processor_clk_div(get_local_tile_id(), 600); // 600/600 = 1
+    rtos_printf("tile[%d] clock rate %d\n", THIS_XCORE_TILE, get_local_tile_processor_clock());
 #endif
 
     vTaskSuspend(NULL);
@@ -143,6 +173,9 @@ void tile_common_init(chanend_t c)
 {
     platform_init(c);
     chanend_free(c);
+
+    enable_local_tile_processor_clock_divider();
+    set_tile_processor_clk_div(get_local_tile_id(), 1);
 
     xTaskCreate((TaskFunction_t) startup_task,
                 "startup_task",

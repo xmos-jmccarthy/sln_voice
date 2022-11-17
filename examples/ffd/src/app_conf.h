@@ -22,7 +22,7 @@
 /* Audio Pipeline Configuration */
 #define appconfAUDIO_CLOCK_FREQUENCY            MIC_ARRAY_CONFIG_MCLK_FREQ
 #define appconfPDM_CLOCK_FREQUENCY              MIC_ARRAY_CONFIG_PDM_FREQ
-#define appconfAUDIO_PIPELINE_SAMPLE_RATE       16000  // NOTE: 4800 is not supported in FFD ext
+#define appconfAUDIO_PIPELINE_SAMPLE_RATE       16000  // NOTE: 48000 is not supported in FFD ext
 #define appconfAUDIO_PIPELINE_CHANNELS          MIC_ARRAY_CONFIG_MIC_COUNT
 /* If in channel sample format, appconfAUDIO_PIPELINE_FRAME_ADVANCE == MIC_ARRAY_CONFIG_SAMPLES_PER_FRAME*/
 #define appconfAUDIO_PIPELINE_FRAME_ADVANCE     MIC_ARRAY_CONFIG_SAMPLES_PER_FRAME
@@ -44,12 +44,12 @@
 /* Output raw inferences, if set to 0, a state machine requires a wake up phrase
  * before a command phrase */
 #ifndef appconfINFERENCE_RAW_OUTPUT
-#define appconfINFERENCE_RAW_OUTPUT   0
+#define appconfINFERENCE_RAW_OUTPUT   1
 #endif
 
 /* Enable audio response output */
 #ifndef appconfAUDIO_PLAYBACK_ENABLED
-#define appconfAUDIO_PLAYBACK_ENABLED   1
+#define appconfAUDIO_PLAYBACK_ENABLED   0
 #endif
 
 /* Maximum number of detected intents to hold */
@@ -84,23 +84,23 @@
 #endif
 
 #ifndef appconfSSD1306_DISPLAY_ENABLED
-#define appconfSSD1306_DISPLAY_ENABLED   1
+#define appconfSSD1306_DISPLAY_ENABLED   0
 #endif
 
 #ifndef appconfI2S_ENABLED
-#define appconfI2S_ENABLED   1
+#define appconfI2S_ENABLED   0
 #endif
 
 #ifndef appconfAUDIO_PIPELINE_SKIP_IC_AND_VNR
-#define appconfAUDIO_PIPELINE_SKIP_IC_AND_VNR   0
+#define appconfAUDIO_PIPELINE_SKIP_IC_AND_VNR   1
 #endif
 
 #ifndef appconfAUDIO_PIPELINE_SKIP_NS
-#define appconfAUDIO_PIPELINE_SKIP_NS   0
+#define appconfAUDIO_PIPELINE_SKIP_NS   1
 #endif
 
 #ifndef appconfAUDIO_PIPELINE_SKIP_AGC
-#define appconfAUDIO_PIPELINE_SKIP_AGC   0
+#define appconfAUDIO_PIPELINE_SKIP_AGC   1
 #endif
 
 #ifndef appconfI2S_AUDIO_SAMPLE_RATE
@@ -142,7 +142,7 @@
 /* I/O and interrupt cores for Tile 1 */
 #define appconfPDM_MIC_IO_CORE                  1 /* Must be kept off core 0 with the RTOS tick ISR */
 #define appconfI2S_IO_CORE                      2 /* Must be kept off core 0 with the RTOS tick ISR */
-#define appconfPDM_MIC_INTERRUPT_CORE           4 /* Must be kept off I/O cores. Best kept off core 0 with the tick ISR. */
+#define appconfPDM_MIC_INTERRUPT_CORE           2 /* Must be kept off I/O cores. Best kept off core 0 with the tick ISR. */
 #define appconfI2S_INTERRUPT_CORE               3 /* Must be kept off I/O cores. Best kept off core 0 with the tick ISR. */
 
 /* Task Priorities */

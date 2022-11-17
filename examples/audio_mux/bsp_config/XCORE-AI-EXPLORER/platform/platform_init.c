@@ -150,7 +150,11 @@ static void mics_init(void)
     rtos_mic_array_init(
             mic_array_ctx,
             (1 << appconfPDM_MIC_IO_CORE),
-            RTOS_MIC_ARRAY_CHANNEL_SAMPLE);
+            RTOS_MIC_ARRAY_SAMPLE_CHANNEL);
+    // rtos_mic_array_init(
+    //         mic_array_ctx,
+    //         (1 << appconfPDM_MIC_IO_CORE),
+    //         RTOS_MIC_ARRAY_CHANNEL_SAMPLE);
 #endif
 }
 
