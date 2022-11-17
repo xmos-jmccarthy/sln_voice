@@ -21,7 +21,7 @@
 #define appconfAUDIO_PIPELINE_SAMPLE_RATE       16000
 #define appconfAUDIO_PIPELINE_CHANNELS          MIC_ARRAY_CONFIG_MIC_COUNT
 /* If in channel sample format, appconfAUDIO_PIPELINE_FRAME_ADVANCE == MIC_ARRAY_CONFIG_SAMPLES_PER_FRAME*/
-#define appconfAUDIO_PIPELINE_FRAME_ADVANCE     MIC_ARRAY_CONFIG_SAMPLES_PER_FRAME
+#define appconfAUDIO_PIPELINE_FRAME_ADVANCE     240//MIC_ARRAY_CONFIG_SAMPLES_PER_FRAME
 
 /* Input configuration */
 #ifndef appconfUSB_INPUT
@@ -42,7 +42,7 @@
 #endif
 
 #ifndef appconfI2S_OUTPUT
-#define appconfI2S_OUTPUT           1
+#define appconfI2S_OUTPUT           0
 #endif
 
 #ifndef appconfI2S_ENABLED
@@ -50,7 +50,7 @@
 #endif
 
 #ifndef appconfUSB_ENABLED
-#define appconfUSB_ENABLED         (appconfUSB_INPUT || appconfI2S_OUTPUT)
+#define appconfUSB_ENABLED         (appconfUSB_INPUT || appconfUSB_OUTPUT)
 #endif
 
 #ifndef appconfUSB_AUDIO_ENABLED

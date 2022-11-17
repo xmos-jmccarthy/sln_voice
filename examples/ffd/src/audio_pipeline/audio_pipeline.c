@@ -67,6 +67,7 @@ static void *audio_pipeline_input_i(void *input_app_data)
 
     frame_data = pvPortMalloc(sizeof(frame_data_t));
 
+// rtos_printf("frame\n");
     audio_pipeline_input(input_app_data,
                        (int32_t **)frame_data->samples,
                        2,
@@ -87,12 +88,24 @@ static int audio_pipeline_output_i(frame_data_t *frame_data,
                                appconfAUDIO_PIPELINE_FRAME_ADVANCE);
 }
 
-static void stage_vnr_and_ic(frame_data_t *frame_data)
+static void stage_vnr_and_ic_0(frame_data_t *frame_data)
+{
+    ;
+}
+
+static void stage_vnr_and_ic_1(frame_data_t *frame_data)
 {
 #if appconfAUDIO_PIPELINE_SKIP_IC_AND_VNR
     (void) frame_data;
 #else
     int32_t DWORD_ALIGNED ic_output[appconfAUDIO_PIPELINE_FRAME_ADVANCE];
+
+
+// uint32_t start = get_reference_time();
+
+    // uint32_t end = get_reference_time();
+
+    // rtos_printf("times diff:%d start:%d end:%d\n", end-start, start, end);
 
     ic_filter(&ic_stage_state.state,
               frame_data->samples[0],
@@ -126,6 +139,11 @@ static void stage_vnr_and_ic(frame_data_t *frame_data)
     ic_adapt(&ic_stage_state.state, vnr_pred_stage_state.vnr_pred_state.input_vnr_pred);
 
     memcpy(frame_data->samples, ic_output, appconfAUDIO_PIPELINE_FRAME_ADVANCE * sizeof(int32_t));
+
+    // uint32_t end = get_reference_time();
+
+    // rtos_printf("times diff:%d start:%d end:%d\n", end-start, start, end);
+
 #endif
 }
 
@@ -185,16 +203,18 @@ void audio_pipeline_init(
     void *input_app_data,
     void *output_app_data)
 {
-    const int stage_count = 3;
+    const int stage_count = 4;
 
     const pipeline_stage_t stages[] = {
-        (pipeline_stage_t)stage_vnr_and_ic,
+        (pipeline_stage_t)stage_vnr_and_ic_0,
+        (pipeline_stage_t)stage_vnr_and_ic_1,
         (pipeline_stage_t)stage_ns,
         (pipeline_stage_t)stage_agc,
     };
 
     const configSTACK_DEPTH_TYPE stage_stack_sizes[] = {
-        configMINIMAL_STACK_SIZE + RTOS_THREAD_STACK_SIZE(stage_vnr_and_ic) + RTOS_THREAD_STACK_SIZE(audio_pipeline_input_i),
+        configMINIMAL_STACK_SIZE + RTOS_THREAD_STACK_SIZE(stage_vnr_and_ic_0) + RTOS_THREAD_STACK_SIZE(audio_pipeline_input_i),
+        configMINIMAL_STACK_SIZE + RTOS_THREAD_STACK_SIZE(stage_vnr_and_ic_1),
         configMINIMAL_STACK_SIZE + RTOS_THREAD_STACK_SIZE(stage_ns),
         configMINIMAL_STACK_SIZE + RTOS_THREAD_STACK_SIZE(stage_agc) + RTOS_THREAD_STACK_SIZE(audio_pipeline_output_i),
     };

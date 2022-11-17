@@ -127,13 +127,15 @@ void usb_audio_send(rtos_intertile_t *intertile_ctx,
 
     xassert(frame_count == appconfAUDIO_PIPELINE_FRAME_ADVANCE);
 
-    for(int ch=0; ch<CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_TX; ch++) {
+    // for(int ch=0; ch<CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_TX; ch++) {
         for (int i=0; i<appconfAUDIO_PIPELINE_FRAME_ADVANCE; i++) {
-            if (ch < num_chans) {
-                usb_audio_in_frame[i][ch] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*ch)] >> src_32_shift;
-            }
+            // if (ch < num_chans) {
+                // usb_audio_in_frame[i][ch] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*ch)] >> src_32_shift;
+                usb_audio_in_frame[i][0] = frame_buf_ptr[2*i] >> src_32_shift;
+                usb_audio_in_frame[i][1] = frame_buf_ptr[2*i+1] >> src_32_shift;
+            // }
         }
-    }
+    // }
 
     if (mic_interface_open) {
         if (xStreamBufferSend(samples_to_host_stream_buf, usb_audio_in_frame, sizeof(usb_audio_in_frame), 0) != sizeof(usb_audio_in_frame)) {
@@ -611,7 +613,7 @@ bool tud_audio_rx_done_post_read_cb(uint8_t rhport,
       }
 
   } else {
-      rtos_printf("lost USB output samples\n");
+    //   rtos_printf("lost USB output samples\n");
   }
 
   return true;

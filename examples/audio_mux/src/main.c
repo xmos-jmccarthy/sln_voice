@@ -139,6 +139,7 @@ static void mem_analysis(void)
 	}
 }
 
+#include "xcore_clock_control.h"
 void startup_task(void *arg)
 {
     rtos_printf("Startup task running from tile %d on core %d\n", THIS_XCORE_TILE, portGET_CORE_ID());
@@ -146,6 +147,19 @@ void startup_task(void *arg)
     platform_start();
 
     audio_pipeline_init(NULL, NULL);
+
+#if ON_TILE(1)
+    // set_tile_processor_clk_div(get_local_tile_id(), 2); // 600/2 = 300
+    // set_tile_processor_clk_div(get_local_tile_id(), 3); // 600/3 = 200 // lowest i2s functions
+    // set_tile_processor_clk_div(get_local_tile_id(), 4); // 600/4 = 150
+    set_tile_processor_clk_div(get_local_tile_id(), 5); // 600/5 = 120
+    // set_tile_processor_clk_div(get_local_tile_id(), 6); // 600/6 = 100
+    // set_tile_processor_clk_div(get_local_tile_id(), 12); // 600/12 = 50
+    // set_tile_processor_clk_div(get_local_tile_id(), 24); // 600/24 = 25
+    // set_tile_processor_clk_div(get_local_tile_id(), 600); // 600/600 = 1
+    rtos_printf("tile[%d] clock rate %d\n", THIS_XCORE_TILE, get_local_tile_processor_clock());
+#endif
+
 
     mem_analysis();
     /*
@@ -163,6 +177,9 @@ static void tile_common_init(chanend_t c)
 {
     platform_init(c);
     chanend_free(c);
+
+    enable_local_tile_processor_clock_divider();
+    set_tile_processor_clk_div(get_local_tile_id(), 1);
 
 #if appconfUSB_ENABLED && ON_TILE(USB_TILE_NO)
     usb_audio_init(intertile_ctx, appconfUSB_AUDIO_TASK_PRIORITY);

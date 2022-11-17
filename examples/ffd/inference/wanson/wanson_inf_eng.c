@@ -38,7 +38,7 @@ void vDisplayClearCallback(TimerHandle_t pxTimer)
     }
     inference_state = STATE_EXPECTING_WAKEWORD;
 }
-
+static uint32_t in_last = 0;
 #pragma stackfunction 1500
 void wanson_engine_task(void *args)
 {
@@ -117,6 +117,9 @@ void wanson_engine_task(void *args)
             /* Perform inference here */
             ret = Wanson_ASR_Recog(buf_short, WANSON_SAMPLES_PER_INFERENCE, (const char **)&text_ptr, &id);
 
+
+    // rtos_printf("inf times diff:%d\n", get_reference_time() - in_last);
+    // in_last = get_reference_time();
             if (ret) {
     #if appconfINFERENCE_RAW_OUTPUT
                 wanson_engine_proc_keyword_result((const char **)&text_ptr, id);
