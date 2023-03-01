@@ -6,6 +6,7 @@ set(FAST_FLASH_TEST_SRC_ROOT ${CMAKE_CURRENT_LIST_DIR})
 file(GLOB_RECURSE APP_SOURCES ${CMAKE_CURRENT_LIST_DIR}/src/*.c)
 set(APP_INCLUDES ${CMAKE_CURRENT_LIST_DIR}/src)
 include(${CMAKE_CURRENT_LIST_DIR}/bsp_config/bsp_config.cmake)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/qspi_fast_flash_read)
 
 #**********************
 # QSPI Flash Layout
@@ -52,7 +53,7 @@ target_sources(${TARGET_NAME} PUBLIC ${APP_SOURCES})
 target_include_directories(${TARGET_NAME} PUBLIC ${APP_INCLUDES} ${RTOS_CONF_INCLUDES})
 target_compile_definitions(${TARGET_NAME} PUBLIC ${APP_COMPILE_DEFINITIONS})
 target_compile_options(${TARGET_NAME} PRIVATE ${APP_COMPILER_FLAGS})
-target_link_libraries(${TARGET_NAME} PUBLIC ${APP_LINK_LIBRARIES})
+target_link_libraries(${TARGET_NAME} PUBLIC ${APP_LINK_LIBRARIES} lib_qspi_flash_fast_read)
 target_link_options(${TARGET_NAME} PRIVATE ${APP_LINK_OPTIONS})
 
 add_executable(example_xc_fast_flash_test EXCLUDE_FROM_ALL)
