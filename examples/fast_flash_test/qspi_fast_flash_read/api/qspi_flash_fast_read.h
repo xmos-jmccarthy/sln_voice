@@ -37,6 +37,9 @@ typedef struct {
 	port_t sio_port;
     qspi_fast_flash_read_transfer_mode_t mode;
     unsigned char divide;
+	
+	char best_setting;
+	int read_adj;
 } qspi_fast_flash_read_ctx_t;
 
 // Define the clock source divide - 600MHz/800MHz core clock divided by (2*CLK_DIVIDE)
@@ -56,6 +59,15 @@ void qspi_flash_fast_read_init(
     qspi_fast_flash_read_transfer_mode_t mode,
     unsigned char divide);
 
+void qspi_flash_fast_read(
+    qspi_fast_flash_read_ctx_t *ctx,
+	unsigned int addr,
+	unsigned char *buf,
+	size_t len);
+
+void qspi_flash_fast_read_calibrate(
+    qspi_fast_flash_read_ctx_t *ctx);
+	
 void qspi_flash_fast_read_setup_resources(
     qspi_fast_flash_read_ctx_t *ctx);
 

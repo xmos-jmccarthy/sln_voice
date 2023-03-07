@@ -14,8 +14,8 @@ extern "C" {
 #define QSPI_FLASH_FAST_READ_PATTERN_WORDS 1
 
 static unsigned qspi_flash_fast_read_pattern[QSPI_FLASH_FAST_READ_PATTERN_WORDS] = {
-    // 0xD409EFBE
-    0x7DF7902B
+    0xD409EFBE
+    // 0x7DF7902B
 };
 
 #ifdef __cplusplus
@@ -23,4 +23,3 @@ static unsigned qspi_flash_fast_read_pattern[QSPI_FLASH_FAST_READ_PATTERN_WORDS]
 #endif
 
 #endif /* QSPI_FAST_FLASH_READ_PATTERN_H_ */
-
