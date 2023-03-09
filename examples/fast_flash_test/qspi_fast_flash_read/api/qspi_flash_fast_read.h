@@ -4,30 +4,18 @@
 #ifndef QSPI_FAST_FLASH_READ_H_
 #define QSPI_FAST_FLASH_READ_H_
 
-/* Allow user to override pattern header */
-#if defined(QSPI_FLASH_FAST_READ_USER_CONFIG_FILE)
-/*
- * User provided header must include:
- * - QSPI_FLASH_FAST_READ_PATTERN_ADDRESS
- *      starting flash address of expected pattern
- * - QSPI_FLASH_FAST_READ_PATTERN_WORDS
- *      number of words in the calibration pattern
- * - qspi_flash_fast_read_pattern
- *      a static array of QSPI_FLASH_FAST_READ_PATTERN_WORDS
- *      words containing the calibration pattern
- */
-#include QSPI_FLASH_FAST_READ_USER_CONFIG_FILE
-#else
-#include "qspi_flash_fast_read_default_pattern.h"
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#include <xs1.h>
+#include <xclib.h>
+#include <xcore/clock.h>
+#include <xcore/port.h>
+
 typedef enum {
 	qspi_fast_flash_read_transfer_raw = 0, /**< Do not bit reverse port in */
-	qspi_fast_flash_read_transfer_bitrev   /**< Bitreverse port ins */
+	qspi_fast_flash_read_transfer_nibble_swap   /**< Nibble swap port ins */
 } qspi_fast_flash_read_transfer_mode_t;
 
 typedef struct {
@@ -38,8 +26,7 @@ typedef struct {
     qspi_fast_flash_read_transfer_mode_t mode;
     unsigned char divide;
 	
-	char best_setting;
-	int read_adj;
+	unsigned int read_start_pt;
 } qspi_fast_flash_read_ctx_t;
 
 // Define the clock source divide - 600MHz/800MHz core clock divided by (2*CLK_DIVIDE)
@@ -49,6 +36,15 @@ typedef struct {
 // 4            75MHz     100MHz
 // 5            60MHz     80MHz
 // 6            50MHz     66MHz
+
+
+// Only supports flash parts with:
+// 0xEB Fast Quad read instruction where address and data bits are input and output over QSPI
+// Flash read command is of the format:
+// instruction 8 cycles
+// 3 bytes addr
+// 6 dummy (may be 2 mode 4 dummy, note mode will implicitly be set to 0)
+// data read
 
 void qspi_flash_fast_read_init(
     qspi_fast_flash_read_ctx_t *ctx,
@@ -65,7 +61,8 @@ void qspi_flash_fast_read(
 	unsigned char *buf,
 	size_t len);
 
-void qspi_flash_fast_read_calibrate(
+/* Returns -1 on failure */
+int qspi_flash_fast_read_calibrate(
     qspi_fast_flash_read_ctx_t *ctx);
 	
 void qspi_flash_fast_read_setup_resources(
@@ -79,4 +76,3 @@ void qspi_flash_fast_read_shutdown(
 #endif
 
 #endif /* QSPI_FAST_FLASH_READ_H_ */
-
