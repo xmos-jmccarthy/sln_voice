@@ -1,6 +1,7 @@
 // Copyright (c) 2023 XMOS LIMITED. This Software is subject to the terms of the
 // XMOS Public License: Version 1
 
+#include <xs1.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,6 +26,13 @@
 #endif
 
 #define MAX_CLK_DIVIDE 6
+
+#ifndef QSPI_FFR_APP_PROVIDED_SWMEM
+#define SWMEM_ADDRESS_UNINITIALISED 0xffffffff
+static volatile unsigned int __swmem_address = SWMEM_ADDRESS_UNINITIALISED;
+#else
+extern unsigned int __swmem_address;
+#endif
 
 void qspi_flash_fast_read_setup_resources(
     qspi_fast_flash_read_ctx_t *ctx)
@@ -111,6 +119,12 @@ int qspi_flash_fast_read_calibrate(
     int pass_count = 0;
     int passing_words = 0;
     char time_index = 0;
+    unsigned calibration_addr = (unsigned)qspi_flash_fast_read_pattern - XS1_SWMEM_BASE;
+    
+    if (__swmem_address != SWMEM_ADDRESS_UNINITIALISED) {
+        calibration_addr += __swmem_address;
+    }
+
     /* Save mode to restore.  Calibration is always done raw */
     qspi_fast_flash_read_transfer_mode_t start_mode = ctx->mode;
     ctx->mode = qspi_fast_flash_read_transfer_raw;
@@ -137,13 +151,14 @@ int qspi_flash_fast_read_calibrate(
                 QSPI_FF_SETC(ctx->sio_port, QSPI_FF_SETC_PAD_DELAY(pad_delay));
 
                 // Read the data with the current settings
-                qspi_flash_fast_read(ctx, 0x100000, (uint8_t*)&read_data_tmp[0], QSPI_FLASH_FAST_READ_PATTERN_WORDS * sizeof(uint32_t));
+                qspi_flash_fast_read(ctx, calibration_addr, (uint8_t*)&read_data_tmp[0], QSPI_FLASH_FAST_READ_PATTERN_WORDS * sizeof(uint32_t));
                 
                 // Check if the data is correct
                 passing_words = 0;
                 for (int m = 0; m < QSPI_FLASH_FAST_READ_PATTERN_WORDS; m++)
                 {
-                    if (read_data_tmp[m] == qspi_flash_fast_read_pattern[m]) {
+                    // printf("0x%08x\n", read_data_tmp[m]);
+                    if (read_data_tmp[m] == qspi_flash_fast_read_pattern_expect[m]) {
                         passing_words++;
                     }
                 }
@@ -187,11 +202,11 @@ void qspi_flash_fast_read(
     unsigned addr_mode_wr;
     int i=0;
 
-    // We shift the address left by 8 bits to align the MSB of address with MSB of the int. We or in the mode bits.
+    // Shift the address left by 8 bits to align the MSB of address with MSB of the int. We or in the mode bits.
     // Buffered ports remember always shift right.
     // So LSB first
     // We need to nibble swap the address and mode word as it needs to be output MS nibble first and ports do the opposite
-    addr_mode_wr = nibble_swap(byterev((addr << 8)));
+    addr_mode_wr = qspi_ff_nibble_swap(byterev((addr << 8)));
     
     // Need to set the first data output bit (MS bit of flash command) before we start the clock.
     port_out_part_word(ctx->sio_port, 0x1, 4);
@@ -222,7 +237,7 @@ void qspi_flash_fast_read(
     for (i = 0; i < word_len; i++) {
         read_data[i] = port_in(ctx->sio_port);
         if (ctx->mode == qspi_fast_flash_read_transfer_nibble_swap) {
-            read_data[i] = nibble_swap(read_data[i]);
+            read_data[i] = qspi_ff_nibble_swap(read_data[i]);
         }
     }
 
@@ -234,7 +249,7 @@ void qspi_flash_fast_read(
         uint32_t tmp = port_in(ctx->sio_port);
 
 		if (ctx->mode == qspi_fast_flash_read_transfer_nibble_swap) {
-			tmp = nibble_swap(tmp);
+			tmp = qspi_ff_nibble_swap(tmp);
 		}
 
         buf = (uint8_t *) &read_data[i];

@@ -158,11 +158,11 @@ int main(void)
     PAR_JOBS (
         PJOB(test, ()),
         PJOB(dummy, ()),
-        // PJOB(dummy, ()),
-        // PJOB(dummy, ()),
-        // PJOB(dummy, ()),
-        // PJOB(dummy, ()),
-        // PJOB(dummy, ()),
+        PJOB(dummy, ()),
+        PJOB(dummy, ()),
+        PJOB(dummy, ()),
+        PJOB(dummy, ()),
+        PJOB(dummy, ()),
         PJOB(dummy, ())
     );
     return 0;

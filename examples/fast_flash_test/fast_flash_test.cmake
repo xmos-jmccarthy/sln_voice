@@ -73,6 +73,13 @@ create_debug_target(example_xc_fast_flash_test)
 create_run_target(example_fast_flash_test)
 create_debug_target(example_fast_flash_test)
 
+create_flash_app_target(
+    #[[ Target ]]                   example_fast_flash_test
+    #[[ Boot Partition Size ]]      0x100000
+    #[[ Data Partition Contents ]]
+    #[[ Dependencies ]]
+)
+
 #**********************
 # Create data partition support targets
 #**********************

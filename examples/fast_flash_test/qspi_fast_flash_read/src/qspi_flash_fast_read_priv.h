@@ -35,33 +35,27 @@ extern "C" {
 
 #define QSPI_FF_SETC(res, r) asm volatile( "setc res[%0], %1" :: "r" (res), "r" (r))
 
-/* Pad delay uses mdoe bits 0x7007 with the value stored in bits 11..3 
+/* Pad delay uses mode bits 0x7007 with the value stored in bits 11..3 
  * Can only take on the values 0-4 */
 #define QSPI_FF_SETC_PAD_DELAY(n) (0x7007 | ((n) << 3))
 
-// #define QSPI_FLASH_FAST_READ_PATTERN_WORDS  8
-#define QSPI_FLASH_FAST_READ_PATTERN_WORDS  1
+#define QSPI_FLASH_FAST_READ_PATTERN_WORDS  8
 
 extern unsigned int qspi_flash_fast_read_pattern[QSPI_FLASH_FAST_READ_PATTERN_WORDS];
-
+extern unsigned int qspi_flash_fast_read_pattern_expect[QSPI_FLASH_FAST_READ_PATTERN_WORDS];
 
 __attribute__((always_inline))
-inline unsigned int nibble_swap( unsigned int word)
+inline unsigned int qspi_ff_nibble_swap( unsigned int word)
 {
-	// uint32_t tmp;
-    // asm volatile (
-    //     ".issue_mode dual\n"
-    //     "dualentsp 0\n"
-	// 	"{and %0,%0,%2 ; and  %1,%0,%3}\n"
-	// 	"{shl %0,%0,4  ; shr  %1,%1,4}\n"
-    //     "entsp 0\n"
-    //     ".issue_mode single\n"
-	// 	: "+r"(word), "=r"(tmp)
-	// 	: "r"(0x0F0F0F0F), "r"(0xF0F0F0F0)
-	// );
+	unsigned tmp;
+    asm volatile (
+		"{and %0,%0,%2 ; and  %1,%0,%3}\n"
+		"{shl %0,%0,4  ; shr  %1,%1,4}\n"
+		: "+r"(word), "=r"(tmp)
+		: "r"(0x0F0F0F0F), "r"(0xF0F0F0F0)
+	);
 
-	// return word | tmp;
-    return ((word & 0x0F0F0F0F) << 4) | ((word & 0xF0F0F0F0) >> 4);
+	return word | tmp;
 }
 
 #ifdef __cplusplus

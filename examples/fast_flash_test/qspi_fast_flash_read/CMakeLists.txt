@@ -1,5 +1,5 @@
 
-if((${CMAKE_SYSTEM_NAME} STREQUAL XCORE_XS3A) OR (${CMAKE_SYSTEM_NAME} STREQUAL XCORE_XS2A))
+if(${CMAKE_SYSTEM_NAME} STREQUAL XCORE_XS3A)
     ## Source files
     file(GLOB_RECURSE LIB_C_SOURCES   src/*.c )
     file(GLOB_RECURSE LIB_CXX_SOURCES src/*.cc)
@@ -27,24 +27,22 @@ if((${CMAKE_SYSTEM_NAME} STREQUAL XCORE_XS3A) OR (${CMAKE_SYSTEM_NAME} STREQUAL 
     list(APPEND LIB_PRIVATE_SOURCES ${${CMAKE_SYSTEM_NAME}_SOURCES})
 
     ## Create library target
-    add_library(lib_qspi_flash_fast_read STATIC)
+    add_library(lib_qspi_flash_fast_read INTERFACE)
     target_sources(lib_qspi_flash_fast_read
-        PUBLIC
+        INTERFACE
             ${LIB_PUBLIC_SOURCES}
-        PRIVATE
             ${LIB_PRIVATE_SOURCES}
     )
     target_include_directories(lib_qspi_flash_fast_read
-        PUBLIC
+        INTERFACE
             ${LIB_PUBLIC_INCLUDES}
-        PRIVATE
             ${LIB_PRIVATE_INCLUDES}
     )
     target_compile_options(lib_qspi_flash_fast_read
-        PRIVATE
+        INTERFACE
             ${LIB_COMPILE_FLAGS}
     )
     target_link_libraries(lib_qspi_flash_fast_read
-        PUBLIC
+        INTERFACE
     )
 endif()
