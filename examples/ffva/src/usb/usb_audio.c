@@ -138,18 +138,18 @@ void usb_audio_send(rtos_intertile_t *intertile_ctx,
             usb_audio_in_frame[i][1] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*1)] >> (src_32_shift + 0);
             usb_audio_in_frame[i][2] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*0)] >> (src_32_shift - 1);
             usb_audio_in_frame[i][3] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*1)] >> (src_32_shift - 1);
-            usb_audio_in_frame[i][4] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*0)] >> (src_32_shift - 2);
-            usb_audio_in_frame[i][5] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*1)] >> (src_32_shift - 2);
-            usb_audio_in_frame[i][6] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*0)] >> (src_32_shift - 3);
-            usb_audio_in_frame[i][7] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*1)] >> (src_32_shift - 3);
-            usb_audio_in_frame[i][8] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*0)] >> (src_32_shift - 4);
-            usb_audio_in_frame[i][9] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*1)] >> (src_32_shift - 4);
-            usb_audio_in_frame[i][10] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*0)] >> (src_32_shift - 5);
-            usb_audio_in_frame[i][11] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*1)] >> (src_32_shift - 5);
-            usb_audio_in_frame[i][12] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*0)] >> (src_32_shift - 6);
-            usb_audio_in_frame[i][13] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*1)] >> (src_32_shift - 6);
-            usb_audio_in_frame[i][14] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*0)] >> (src_32_shift - 7);
-            usb_audio_in_frame[i][15] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*1)] >> (src_32_shift - 7);
+            // usb_audio_in_frame[i][4] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*0)] >> (src_32_shift - 2);
+            // usb_audio_in_frame[i][5] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*1)] >> (src_32_shift - 2);
+            // usb_audio_in_frame[i][6] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*0)] >> (src_32_shift - 3);
+            // usb_audio_in_frame[i][7] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*1)] >> (src_32_shift - 3);
+            // usb_audio_in_frame[i][8] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*0)] >> (src_32_shift - 4);
+            // usb_audio_in_frame[i][9] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*1)] >> (src_32_shift - 4);
+            // usb_audio_in_frame[i][10] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*0)] >> (src_32_shift - 5);
+            // usb_audio_in_frame[i][11] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*1)] >> (src_32_shift - 5);
+            // usb_audio_in_frame[i][12] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*0)] >> (src_32_shift - 6);
+            // usb_audio_in_frame[i][13] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*1)] >> (src_32_shift - 6);
+            // usb_audio_in_frame[i][14] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*0)] >> (src_32_shift - 7);
+            // usb_audio_in_frame[i][15] = frame_buf_ptr[i+(appconfAUDIO_PIPELINE_FRAME_ADVANCE*1)] >> (src_32_shift - 7);
             // }
         }
     // }
@@ -169,7 +169,7 @@ void usb_audio_recv(rtos_intertile_t *intertile_ctx,
                     int32_t **frame_buffers,
                     size_t num_chans)
 {
-    static samp_t usb_audio_out_frame[appconfAUDIO_PIPELINE_FRAME_ADVANCE][CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_RX];
+    static int16_t usb_audio_out_frame[appconfAUDIO_PIPELINE_FRAME_ADVANCE][CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_RX];
     size_t bytes_received;
     int32_t *frame_buf_ptr = (int32_t *) frame_buffers;
 
@@ -213,7 +213,7 @@ void usb_audio_out_task(void *arg)
 
 
     for (;;) {
-        samp_t usb_audio_out_frame[appconfAUDIO_PIPELINE_FRAME_ADVANCE][CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_RX];
+        int16_t usb_audio_out_frame[appconfAUDIO_PIPELINE_FRAME_ADVANCE][CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_RX];
         size_t bytes_received = 0;
 
         /*
@@ -519,7 +519,7 @@ bool tud_audio_rx_done_post_read_cb(uint8_t rhport,
     (void)rhport;
   
     uint8_t rx_data[CFG_TUD_AUDIO_FUNC_1_EP_OUT_SW_BUF_SZ];
-    samp_t usb_audio_frames[AUDIO_FRAMES_PER_USB_FRAME][CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_RX];
+    int16_t usb_audio_frames[AUDIO_FRAMES_PER_USB_FRAME][CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_RX];
     const size_t stream_buffer_send_byte_count = sizeof(usb_audio_frames) / RATE_MULTIPLIER;
 
     host_streaming_out = true;
@@ -654,7 +654,7 @@ bool tud_audio_tx_done_pre_load_cb(uint8_t rhport,
      */
     if (host_streaming_out && (0 != prev_n_bytes_received))
     {
-        tx_size_bytes = (prev_n_bytes_received / CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_RX) * CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_TX;
+        tx_size_bytes = ((prev_n_bytes_received * (CFG_TUD_AUDIO_FUNC_1_N_BYTES_PER_SAMPLE_TX / CFG_TUD_AUDIO_FUNC_1_N_BYTES_PER_SAMPLE_RX)) / CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_RX) * CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_TX;
     }
     else
     {
